@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+/* ── RPG System Theme ── */
+@theme inline {
+  --color-background: #0a0a1a;
+  --color-foreground: #e0e0e8;
+  --color-neon-blue: #00d4ff;
+  --color-neon-purple: #b347ea;
+  --color-neon-cyan: #00ffd5;
+  --color-card-bg: rgba(15, 15, 35, 0.85);
+  --color-card-border: rgba(0, 212, 255, 0.15);
+  --color-card-hover-border: rgba(179, 71, 234, 0.5);
+  --color-surface: #111125;
+  --color-muted: #8888aa;
+  --font-heading: var(--font-orbitron);
+  --font-body: var(--font-rajdhani);
+}
+
+/* ── Base ── */
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Grid overlay for RPG feel */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Radial vignette */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* ── Glow Utilities ── */
+.glow-blue {
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3), 0 0 32px rgba(0, 212, 255, 0.1);
+}
+
+.glow-purple {
+  box-shadow: 0 0 8px rgba(179, 71, 234, 0.3), 0 0 32px rgba(179, 71, 234, 0.1);
+}
+
+.glow-text-blue {
+  text-shadow: 0 0 12px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.15);
+}
+
+.glow-text-purple {
+  text-shadow: 0 0 12px rgba(179, 71, 234, 0.5), 0 0 40px rgba(179, 71, 234, 0.15);
+}
+
+/* ── Animated Progress Bar ── */
+@keyframes progress-shine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.progress-bar-animated {
+  background-size: 200% 100%;
+  animation: progress-shine 2.5s linear infinite;
+}
+
+/* ── Pulse Glow Keyframe ── */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ── Float Animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ── Dot Animation ─ */
+@keyframes dot-blink {
+  0%, 20% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00d4ff, #b347ea);
+  border-radius: 3px;
+}
+
+/* ── Selection ── */
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: #fff;
+}

@@ -12,8 +12,9 @@
   --color-card-hover-border: rgba(179, 71, 234, 0.5);
   --color-surface: #111125;
   --color-muted: #8888aa;
-  --font-heading: var(--font-orbitron);
-  --font-body: var(--font-rajdhani);
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui;
+  --font-heading: var(--font-geist), ui-sans-serif, system-ui;
+  --font-body: var(--font-geist), ui-sans-serif, system-ui;
 }
 
 /* ── Base ── */

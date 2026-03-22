@@ -45,7 +45,7 @@ export default function CountdownTimer() {
     { label: "Seconds", value: time.seconds },
   ];
 
-  const isUrgent = time.days < 30;
+  const isUrgent = mounted && time.days < 30;
 
   return (
     <section className="relative text-center py-12 px-4">

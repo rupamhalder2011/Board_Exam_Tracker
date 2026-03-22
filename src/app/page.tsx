@@ -1,72 +1,142 @@
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
 import Header from "@/components/Header";
 import CountdownTimer from "@/components/CountdownTimer";
 import SubjectCard from "@/components/SubjectCard";
 
-const subjects = [
+interface SubjectConfig {
+  name: string;
+  icon: string;
+  color: string;
+  gradientFrom: string;
+  gradientTo: string;
+  initialLevel: number;
+}
+
+const SUBJECT_CONFIG: SubjectConfig[] = [
   {
     name: "Mathematics",
     icon: "📐",
-    progress: 62,
     color: "#00d4ff",
     gradientFrom: "#00d4ff",
     gradientTo: "#0088cc",
-    level: 7,
+    initialLevel: 7,
   },
   {
     name: "Science",
     icon: "🔬",
-    progress: 45,
     color: "#b347ea",
     gradientFrom: "#b347ea",
     gradientTo: "#8a2bd4",
-    level: 5,
+    initialLevel: 5,
   },
   {
     name: "English",
     icon: "📖",
-    progress: 78,
     color: "#00ffd5",
     gradientFrom: "#00ffd5",
     gradientTo: "#00b89c",
-    level: 8,
+    initialLevel: 8,
   },
   {
     name: "Hindi",
     icon: "📝",
-    progress: 55,
     color: "#ff6b6b",
     gradientFrom: "#ff6b6b",
     gradientTo: "#cc4444",
-    level: 6,
+    initialLevel: 6,
   },
   {
     name: "Social Science",
     icon: "🌍",
-    progress: 38,
     color: "#ffd700",
     gradientFrom: "#ffd700",
     gradientTo: "#ccaa00",
-    level: 4,
+    initialLevel: 4,
   },
   {
     name: "Marathi",
     icon: "✍️",
-    progress: 70,
     color: "#ff8c42",
     gradientFrom: "#ff8c42",
     gradientTo: "#cc6d2e",
-    level: 7,
+    initialLevel: 7,
   },
 ];
 
-export default function Home() {
-  /* Overall stats */
-  const avgProgress = Math.round(
-    subjects.reduce((sum, s) => sum + s.progress, 0) / subjects.length
-  );
+interface SubjectState {
+  xp: number;
+  level: number;
+}
+
+interface GameState {
+  [key: string]: SubjectState;
+}
+
+export default function App() {
+  const [gameState, setGameState] = useState<GameState>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("boardquest_state");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse game state", e);
+        }
+      }
+    }
+
+    // Default state
+    const initialState: GameState = {};
+    SUBJECT_CONFIG.forEach((s) => {
+      initialState[s.name] = { xp: 0, level: s.initialLevel };
+    });
+    return initialState;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("boardquest_state", JSON.stringify(gameState));
+  }, [gameState]);
+
+  const gainXP = (subjectName: string) => {
+    setGameState((prev) => {
+      const current = prev[subjectName];
+      let newXP = current.xp + 10;
+      let newLevel = current.level;
+
+      if (newXP >= 100) {
+        newLevel += Math.floor(newXP / 100);
+        newXP = newXP % 100;
+      }
+
+      return {
+        ...prev,
+        [subjectName]: {
+          xp: newXP,
+          level: newLevel,
+        },
+      };
+    });
+  };
+
+  const avgProgress = useMemo(() => {
+    const totalXP = Object.keys(gameState).reduce((sum, key) => sum + gameState[key].xp, 0);
+    return Math.round(totalXP / SUBJECT_CONFIG.length);
+  }, [gameState]);
+
+  const rank = useMemo(() => {
+    if (avgProgress >= 90) return "S";
+    if (avgProgress >= 80) return "A+";
+    if (avgProgress >= 70) return "A";
+    if (avgProgress >= 60) return "B+";
+    if (avgProgress >= 50) return "B";
+    if (avgProgress >= 40) return "C";
+    return "D";
+  }, [avgProgress]);
 
   return (
-    <div className="relative z-10 flex flex-col min-h-screen">
+    <div className="relative z-10 flex flex-col min-h-screen bg-[#0a0b0d]">
       <Header />
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8 md:py-12">
@@ -104,7 +174,7 @@ export default function Home() {
                 Rank
               </span>
               <span className="font-heading text-xl font-bold text-neon-purple glow-text-purple">
-                B+
+                {rank}
               </span>
             </div>
           </div>
@@ -112,9 +182,22 @@ export default function Home() {
 
         {/* ── Subject Grid ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {subjects.map((subject) => (
-            <SubjectCard key={subject.name} {...subject} />
-          ))}
+          {SUBJECT_CONFIG.map((subject) => {
+            const state = gameState[subject.name] || { xp: 0, level: subject.initialLevel };
+            return (
+              <SubjectCard
+                key={subject.name}
+                name={subject.name}
+                icon={subject.icon}
+                color={subject.color}
+                gradientFrom={subject.gradientFrom}
+                gradientTo={subject.gradientTo}
+                xp={state.xp}
+                level={state.level}
+                onGainXP={() => gainXP(subject.name)}
+              />
+            );
+          })}
         </div>
       </main>
 
@@ -122,7 +205,7 @@ export default function Home() {
       <footer className="relative z-10 border-t border-card-border bg-card-bg/40 backdrop-blur-sm mt-auto">
         <div className="max-w-6xl mx-auto px-4 py-6 text-center">
           <p className="font-heading text-sm md:text-base text-neon-blue/80 tracking-wider glow-text-blue italic">
-            &quot;Right Here and Now, I&apos;ll Push Pass My Limits&quot;
+            &quot;Right Here and Now, I&apos;ll Push Past My Limits&quot;
           </p>
           <p className="text-muted text-xs mt-2 tracking-widest uppercase">
             BoardQuest · Class X · 2027

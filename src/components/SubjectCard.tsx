@@ -1,28 +1,33 @@
 "use client";
 
-interface SubjectCardProps {
+import React from "react";
+
+export interface SubjectCardProps {
   name: string;
   icon: string;
-  progress: number;       // 0–100
+  xp: number;           // 0–99
+  level: number;
   color: string;           // Tailwind-compatible HEX
   gradientFrom: string;
   gradientTo: string;
-  level: number;
+  onGainXP: () => void;
 }
 
-export default function SubjectCard({
+const SubjectCard: React.FC<SubjectCardProps> = ({
   name,
   icon,
-  progress,
+  xp,
+  level,
   color,
   gradientFrom,
   gradientTo,
-  level,
-}: SubjectCardProps) {
-  const clampedProgress = Math.min(100, Math.max(0, progress));
+  onGainXP,
+}) => {
+  const clampedProgress = Math.min(100, Math.max(0, xp));
 
   return (
     <div
+      onClick={onGainXP}
       className="
         group relative p-5 rounded-2xl
         border border-card-border
@@ -30,8 +35,12 @@ export default function SubjectCard({
         transition-all duration-300 ease-out
         hover:border-card-hover-border
         hover:translate-y-[-4px]
-        hover:shadow-[0_0_30px_rgba(179,71,234,0.12)]
+        cursor-pointer
+        active:scale-[0.98]
       "
+      style={{
+        boxShadow: `0 0 30px ${color}15`
+      }}
     >
       {/* Top Row: Icon + Name + Level */}
       <div className="flex items-center justify-between mb-4">
@@ -104,7 +113,7 @@ export default function SubjectCard({
           {clampedProgress}%
         </span>
         <span className="text-muted text-xs tracking-wider">
-          {clampedProgress * 10} / 1000 XP
+          {xp} / 100 XP
         </span>
       </div>
 
@@ -133,4 +142,6 @@ export default function SubjectCard({
       />
     </div>
   );
-}
+};
+
+export default SubjectCard;
